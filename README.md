@@ -58,4 +58,5 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=（anon public キー）
 |---|---|
 | Oracle Databaseのアーキテクチャ | 16 |
 | データベース・インスタンスの管理 | 17 |
-| ほか6章（Oracle Net・ユーザーと権限・表領域・スキーマ・DML・SQL） | 準備中 |
+| ユーザーと権限の管理 | 15 |
+| ほか5章（Oracle Net・表領域・スキーマ・DML・SQL） | 準備中 |

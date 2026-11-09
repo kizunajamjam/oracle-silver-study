@@ -1,0 +1,287 @@
+[
+  {
+    "id": "user-001",
+    "chapter": "user",
+    "stem": "CREATE USER で作成しただけのユーザーが、データベースにログインするために最低限必要な権限はどれか。",
+    "select": 1,
+    "choices": ["CREATE SESSION", "CREATE TABLE", "CONNECT ANY", "ALTER SESSION"],
+    "answer": [0],
+    "why": [
+      "正しい。ユーザーを作成しただけでは何の権限もなく、ログインにはCREATE SESSIONシステム権限が必要。",
+      "CREATE TABLEは表を作る権限で、ログインの権限ではない。",
+      "そのような名前のシステム権限はない。",
+      "ALTER SESSIONはセッションの設定を変える権限で、ログインの権限ではない。"
+    ],
+    "tip": "ユーザーを作っただけでは何もできない。ログインは CREATE SESSION で、別に付与する必要がある。",
+    "ref": "Oracle Database Security Guide（Configuring Privilege and Role Authorization）"
+  },
+  {
+    "id": "user-002",
+    "chapter": "user",
+    "stem": "オブジェクト権限に該当するものはどれか。",
+    "select": 1,
+    "choices": [
+      "CREATE ANY TABLE",
+      "DROP USER",
+      "特定の表に対するSELECT権限",
+      "ALTER SYSTEM"
+    ],
+    "answer": [2],
+    "why": [
+      "ANYの付いた権限はシステム権限。どのスキーマにも表を作れる。",
+      "ユーザーを削除する権限はシステム権限。",
+      "正しい。特定のオブジェクト(表やビューなど)に対して付与する権限が、オブジェクト権限。",
+      "ALTER SYSTEMはデータベース全体に作用するシステム権限。"
+    ],
+    "tip": "システム権限＝「何ができるか」の種類(CREATE、ALTER、ANY ...)、オブジェクト権限＝「この表をどうできるか」。",
+    "ref": "Oracle Database Security Guide（Configuring Privilege and Role Authorization）"
+  },
+  {
+    "id": "user-003",
+    "chapter": "user",
+    "stem": "管理者がユーザーAに、あるシステム権限をWITH ADMIN OPTIONで付与した。AがユーザーBに同じ権限を付与したあと、管理者がAからその権限をREVOKEした。Bの権限はどうなるか。",
+    "select": 1,
+    "choices": [
+      "Bの権限は残る。",
+      "Bの権限も連鎖して取り消される。",
+      "REVOKEがエラーになる。",
+      "Bのアカウントがロックされる。"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。システム権限のREVOKEは連鎖しない。AがBに付与した権限は残る。",
+      "連鎖して取り消されるのは、WITH GRANT OPTIONで付与したオブジェクト権限のほう。",
+      "ほかのユーザーに付与済みでも、REVOKEはエラーにならない。",
+      "REVOKEでアカウントがロックされることはない。"
+    ],
+    "tip": "システム権限＋ADMIN OPTION＝連鎖しない。オブジェクト権限＋GRANT OPTION＝連鎖する。試験の定番。",
+    "ref": "Oracle Database SQL Language Reference（REVOKE）"
+  },
+  {
+    "id": "user-004",
+    "chapter": "user",
+    "stem": "ユーザーAにWITH GRANT OPTIONでオブジェクト権限を付与した。AがBに同じ権限を付与したあと、管理者がAの権限をREVOKEした。Bの権限はどうなるか。",
+    "select": 1,
+    "choices": [
+      "Bの権限も連鎖して取り消される。",
+      "Bの権限は残る。",
+      "REVOKEはできない。",
+      "Bの権限は、次回ログイン時に取り消される。"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。WITH GRANT OPTIONで付与したオブジェクト権限は、REVOKEすると、その人が付与した先の権限も連鎖して取り消される。",
+      "権限が残るのは、ADMIN OPTIONで付与したシステム権限をREVOKEした場合。",
+      "付与済みでもREVOKEはできる。",
+      "取り消しは、実行した時点で連鎖して行われる。"
+    ],
+    "tip": "前の問題と対で覚える。オブジェクト権限は連鎖して消え、システム権限は消えない。",
+    "ref": "Oracle Database SQL Language Reference（REVOKE）"
+  },
+  {
+    "id": "user-005",
+    "chapter": "user",
+    "stem": "ロール経由で付与された権限について正しい記述はどれか。",
+    "select": 1,
+    "choices": [
+      "定義者権限のストアド・プロシージャの中では、ロール経由で得た権限は使えない。",
+      "ロールは、特定のスキーマに属するオブジェクトである。",
+      "ロールを別のロールに付与することはできない。",
+      "1人のユーザーに付与できるロールは1つだけである。"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。定義者権限のプロシージャでは、所有者に直接付与された権限だけが使える。ロール経由の権限は有効にならない。",
+      "ロールはどのスキーマにも属さない。",
+      "ロールを別のロールに付与して、権限をまとめることができる。",
+      "1人のユーザーに複数のロールを付与できる。"
+    ],
+    "tip": "ストアド・プロシージャで権限エラーが出たら、ロール経由になっていないかを疑う。直接GRANTすれば解決する。",
+    "ref": "Oracle Database Security Guide（Configuring Privilege and Role Authorization）"
+  },
+  {
+    "id": "user-006",
+    "chapter": "user",
+    "stem": "ログインの失敗が一定回数を超えたとき、アカウントをロックするプロファイルのリソース・パラメータはどれか。",
+    "select": 1,
+    "choices": ["FAILED_LOGIN_ATTEMPTS", "PASSWORD_LIFE_TIME", "PASSWORD_REUSE_TIME", "SESSIONS_PER_USER"],
+    "answer": [0],
+    "why": [
+      "正しい。連続したログイン失敗の許容回数を指定する。超えるとアカウントがロックされる。",
+      "PASSWORD_LIFE_TIMEは、パスワードの有効期間(日数)。",
+      "PASSWORD_REUSE_TIMEは、同じパスワードを再利用できるようになるまでの日数。",
+      "SESSIONS_PER_USERは、同時に持てるセッション数の上限。"
+    ],
+    "tip": "FAILED_LOGIN_ATTEMPTS＝失敗の回数でロック。ロックが続く期間は PASSWORD_LOCK_TIME。",
+    "ref": "Oracle Database Security Guide（Configuring User Authentication）"
+  },
+  {
+    "id": "user-007",
+    "chapter": "user",
+    "stem": "プロファイルを指定せずにユーザーを作成した。そのユーザーに割り当てられるプロファイルはどれか。",
+    "select": 1,
+    "choices": ["DEFAULT", "BASIC", "SYSTEM", "プロファイルは割り当てられない"],
+    "answer": [0],
+    "why": [
+      "正しい。プロファイルを指定しない場合は、DEFAULTプロファイルが割り当てられる。",
+      "BASICという名前の標準のプロファイルはない。",
+      "SYSTEMはユーザー名で、プロファイルではない。",
+      "すべてのユーザーに、必ず何らかのプロファイルが割り当てられる。"
+    ],
+    "tip": "プロファイルの指定がなければ DEFAULT。すべてのユーザーは必ずどれかのプロファイルに属する。",
+    "ref": "Oracle Database Security Guide（Configuring User Authentication）"
+  },
+  {
+    "id": "user-008",
+    "chapter": "user",
+    "stem": "ユーザーのパスワードを直ちに期限切れにし、次回ログイン時に変更を強制する文はどれか。",
+    "select": 1,
+    "choices": [
+      "ALTER USER scott PASSWORD EXPIRE",
+      "ALTER USER scott ACCOUNT LOCK",
+      "DROP USER scott",
+      "REVOKE CREATE SESSION FROM scott"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。PASSWORD EXPIREで、次回のログイン時にパスワードの変更を求められる。",
+      "ACCOUNT LOCKはログインを禁止する。パスワードの変更は求めない。",
+      "DROP USERはユーザーそのものを削除する。",
+      "CREATE SESSIONを取り消すと、ログインできなくなる。パスワードの変更とは別。"
+    ],
+    "tip": "LOCK＝入れなくする、EXPIRE＝パスワードを変えさせる。違いを意識する。",
+    "ref": "Oracle Database SQL Language Reference（ALTER USER）"
+  },
+  {
+    "id": "user-009",
+    "chapter": "user",
+    "stem": "表などのオブジェクトを所有しているユーザーを、オブジェクトごと削除する文はどれか。",
+    "select": 1,
+    "choices": ["DROP USER scott", "DROP USER scott CASCADE", "DROP USER scott FORCE", "ALTER USER scott DROP"],
+    "answer": [1],
+    "why": [
+      "オブジェクトを所有するユーザーは、CASCADEなしでは削除できない(エラーになる)。",
+      "正しい。CASCADEを付けると、ユーザーのスキーマ内のオブジェクトも一緒に削除される。",
+      "DROP USERにFORCEは指定できない。",
+      "ALTER USERにDROPという指定はない。"
+    ],
+    "tip": "オブジェクトを持つユーザーを消すなら CASCADE。接続中のユーザーは削除できない点も覚える。",
+    "ref": "Oracle Database SQL Language Reference（DROP USER）"
+  },
+  {
+    "id": "user-010",
+    "chapter": "user",
+    "stem": "CREATE TABLE権限を持つユーザーが、表にデータを挿入しようとして ORA-01950（表領域に対する権限がありません）が出た。原因はどれか。",
+    "select": 1,
+    "choices": [
+      "その表領域に対する割当て制限(QUOTA)がない。",
+      "INSERT権限がない。",
+      "表領域がオフラインである。",
+      "SELECT ANY TABLE権限がない。"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。表領域に領域を使うには、割当て制限(QUOTA)か UNLIMITED TABLESPACE 権限が必要。ALTER USER ... QUOTA で付与する。",
+      "自分の表へのINSERTに、別のINSERT権限は要らない。エラーの内容も権限の種類が違う。",
+      "オフラインの場合は、別のエラー(ORA-01542など)になる。",
+      "SELECT ANY TABLEは、ほかのスキーマの表を参照する権限で、関係ない。"
+    ],
+    "tip": "ORA-01950＝表領域の割当て制限。権限(GRANT)の問題ではなく、領域(QUOTA)の問題。",
+    "ref": "Oracle Database Administrator's Guide（Managing Users and Securing the Database）"
+  },
+  {
+    "id": "user-011",
+    "chapter": "user",
+    "stem": "OS認証で接続するユーザーを作成するときに指定する句はどれか。",
+    "select": 1,
+    "choices": ["IDENTIFIED EXTERNALLY", "IDENTIFIED BY", "IDENTIFIED GLOBALLY", "DEFAULT TABLESPACE"],
+    "answer": [0],
+    "why": [
+      "正しい。IDENTIFIED EXTERNALLYで、OSでの認証に任せるユーザーになる。",
+      "IDENTIFIED BYは、データベースにパスワードを持たせる認証。",
+      "IDENTIFIED GLOBALLYは、ディレクトリ・サービス(LDAP)などによる認証。",
+      "DEFAULT TABLESPACEは、認証ではなく、オブジェクトを作る表領域の指定。"
+    ],
+    "tip": "認証の3種類：パスワード(BY)、OS(EXTERNALLY)、ディレクトリ(GLOBALLY)。",
+    "ref": "Oracle Database SQL Language Reference（CREATE USER）"
+  },
+  {
+    "id": "user-012",
+    "chapter": "user",
+    "stem": "ユーザーに付与されているシステム権限を調べるデータ・ディクショナリ・ビューはどれか。",
+    "select": 1,
+    "choices": ["DBA_SYS_PRIVS", "DBA_TAB_PRIVS", "DBA_ROLE_PRIVS", "DBA_USERS"],
+    "answer": [0],
+    "why": [
+      "正しい。DBA_SYS_PRIVSに、ユーザーとロールに付与されたシステム権限が表示される。",
+      "DBA_TAB_PRIVSは、オブジェクト権限のビュー。",
+      "DBA_ROLE_PRIVSは、付与されているロールのビュー。",
+      "DBA_USERSは、ユーザーのアカウント情報(状態やプロファイルなど)のビュー。"
+    ],
+    "tip": "SYS＝システム権限、TAB＝オブジェクト権限、ROLE＝ロール。ビュー名の中央の部分で見分ける。",
+    "ref": "Oracle Database Reference（DBA_SYS_PRIVS）"
+  },
+  {
+    "id": "user-013",
+    "chapter": "user",
+    "stem": "GRANT SELECT ON hr.jobs TO PUBLIC を実行した。この文の意味として正しいものはどれか。",
+    "select": 1,
+    "choices": [
+      "現在および将来作成されるすべてのユーザーが、hr.jobsを参照できる。",
+      "PUBLICという名前のユーザーだけが参照できる。",
+      "現在存在するユーザーだけが参照できる。",
+      "DBAロールを持つユーザーだけが参照できる。"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。PUBLICはすべてのユーザーを表す特別な指定で、あとから作られるユーザーにも適用される。",
+      "PUBLICは特定のユーザー名ではない。",
+      "将来作成されるユーザーにも適用される。",
+      "DBAロールは関係しない。すべてのユーザーが対象。"
+    ],
+    "tip": "PUBLICへのGRANTは「全員に公開」。意図しない公開にならないよう、使う範囲は慎重に。",
+    "ref": "Oracle Database Security Guide（Configuring Privilege and Role Authorization）"
+  },
+  {
+    "id": "user-014",
+    "chapter": "user",
+    "stem": "スキーマについて正しい記述はどれか。",
+    "select": 1,
+    "choices": [
+      "ユーザーが所有するオブジェクトの論理的な集まりである。",
+      "データファイルの物理的な集まりである。",
+      "表領域と同じ意味である。",
+      "ロールに付与された権限の集まりである。"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。ユーザーを作成すると、同じ名前のスキーマができ、そのユーザーが作る表や索引などが入る。",
+      "データファイルの集まりは、表領域を構成する物理的な構造。スキーマとは別。",
+      "表領域は物理的な保管場所に対応する論理構造で、スキーマとは別の概念。",
+      "権限の集まりはロールの説明。"
+    ],
+    "tip": "スキーマ＝オブジェクトの持ち主ごとのまとまり(論理)、表領域＝保管場所(物理に近い)。この2つは別軸。",
+    "ref": "Oracle Database Concepts（Overview of Schema Objects）"
+  },
+  {
+    "id": "user-015",
+    "chapter": "user",
+    "stem": "SELECT ANY TABLE システム権限を持つユーザーができることはどれか。",
+    "select": 1,
+    "choices": [
+      "ほかのユーザーのスキーマにある表も含めて、任意の表を問い合わせる。",
+      "ほかのユーザーのスキーマにある表を削除する。",
+      "新しい表を任意のスキーマに作成する。",
+      "ほかのユーザーのパスワードを変更する。"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。ANYが付くので、自分以外のスキーマの表やビューも参照できる。",
+      "表の削除にはDROP ANY TABLEが必要。",
+      "任意のスキーマに表を作るにはCREATE ANY TABLEが必要。",
+      "パスワードの変更にはALTER USERの権限が必要。"
+    ],
+    "tip": "「操作」＋ANY＋「オブジェクト種別」で読む。SELECT ANY TABLE＝どの表でも参照、DROP ANY TABLE＝どの表でも削除。",
+    "ref": "Oracle Database SQL Language Reference（GRANT）"
+  }
+]
