@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f6f7f9;
+  --fg: #1a1d23;
+  --card: #ffffff;
+  --line: #dfe3e8;
+  --muted: #5f6877;
+  --accent: #c74634;
+  --accent-fg: #ffffff;
+  --ok: #15803d;
+  --ok-bg: #e7f6ec;
+  --ng: #b91c1c;
+  --ng-bg: #fdecec;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121418;
+    --fg: #e8eaed;
+    --card: #1b1f26;
+    --line: #2d333d;
+    --muted: #9aa3b0;
+    --accent: #ef6a57;
+    --accent-fg: #1a0d0a;
+    --ok: #4ade80;
+    --ok-bg: #14301f;
+    --ng: #f87171;
+    --ng-bg: #3a1a1a;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-card: var(--card);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-ok: var(--ok);
+  --color-ok-bg: var(--ok-bg);
+  --color-ng: var(--ng);
+  --color-ng-bg: var(--ng-bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", sans-serif;
+  line-height: 1.7;
+}

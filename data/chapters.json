@@ -1,0 +1,10 @@
+[
+  { "id": "arch", "title": "Oracle Databaseのアーキテクチャ", "summary": "インスタンス、SGA/PGA、バックグラウンド・プロセス、論理/物理構造、マルチテナント" },
+  { "id": "instance", "title": "データベース・インスタンスの管理", "summary": "起動と停止、初期化パラメータ、データ・ディクショナリ、アラート・ログ" },
+  { "id": "net", "title": "Oracle Net Servicesの構成", "summary": "リスナー、接続記述子、ネーミング方式、専用/共有サーバー" },
+  { "id": "user", "title": "ユーザーと権限の管理", "summary": "ユーザー作成、システム権限/オブジェクト権限、ロール、プロファイル" },
+  { "id": "storage", "title": "表領域とストレージの管理", "summary": "表領域、データファイル、UNDO、一時表領域" },
+  { "id": "schema", "title": "スキーマ・オブジェクトの管理", "summary": "表、制約、索引、ビュー、シーケンス、シノニム" },
+  { "id": "dml", "title": "データ操作とトランザクション", "summary": "INSERT/UPDATE/DELETE/MERGE、COMMIT/ROLLBACK、読取り一貫性" },
+  { "id": "sql", "title": "SQLによるデータ取得", "summary": "SELECT、単一行関数、結合、副問合せ、集合演算" }
+]
