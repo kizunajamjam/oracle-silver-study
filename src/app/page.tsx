@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { CloudBar } from "@/components/CloudBar";
 import { chapters, questions } from "@/lib/data";
 import { resetAll, useData, useHydrated } from "@/lib/store";
 import { statsOf, statusOf } from "@/lib/study";
@@ -25,6 +26,8 @@ export default function Home() {
         <h1 className="text-2xl font-bold">Silver DBA Study</h1>
         <p className="text-sm text-muted">Oracle Master Silver DBA（Oracle Database Administration I）の学習用</p>
       </header>
+
+      <CloudBar />
 
       <section className="rounded-xl border border-line bg-card p-4">
         <p className="text-sm text-muted">習得済み（2回連続正解）</p>

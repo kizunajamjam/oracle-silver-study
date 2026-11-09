@@ -2,7 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 
-export type Attempt = { qid: string; correct: boolean; at: number; mode: string };
+/** id は端末をまたいだ重複防止用（クラウド同期の主キー） */
+export type Attempt = { id: string; qid: string; correct: boolean; at: number; mode: string };
 export type Data = { attempts: Attempt[]; favorites: string[] };
 
 const KEY = "oracle-silver:v1";
@@ -13,11 +14,26 @@ let cache: { raw: string | null | undefined; data: Data } = { raw: undefined, da
 let memoryOnly = false;
 const listeners = new Set<() => void>();
 
+/** クラウド同期が、変更を知るためのフック（store → cloud の循環 import を避ける） */
+export const hooks: { onAttempt?: () => void; onFavorite?: (qid: string, on: boolean) => void } = {};
+
+function newId(): string {
+  try {
+    return crypto.randomUUID();
+  } catch {
+    return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  }
+}
+
 function parse(raw: string | null): Data {
   if (!raw) return EMPTY;
   try {
-    const d = JSON.parse(raw) as Partial<Data>;
-    return { attempts: d.attempts ?? [], favorites: d.favorites ?? [] };
+    const d = JSON.parse(raw) as { attempts?: (Omit<Attempt, "id"> & { id?: string })[]; favorites?: string[] };
+    return {
+      // id のない古い記録には、問題と時刻から決まる id を付ける
+      attempts: (d.attempts ?? []).map((a) => ({ ...a, id: a.id ?? `${a.qid}:${a.at}` })),
+      favorites: d.favorites ?? [],
+    };
   } catch {
     return EMPTY;
   }
@@ -48,15 +64,28 @@ function save(data: Data) {
   listeners.forEach((l) => l());
 }
 
-export function addAttempt(a: Attempt) {
+export function addAttempt(a: Omit<Attempt, "id">) {
   const d = getData();
-  save({ ...d, attempts: [...d.attempts, a] });
+  save({ ...d, attempts: [...d.attempts, { ...a, id: newId() }] });
+  hooks.onAttempt?.();
 }
 
 export function toggleFavorite(qid: string) {
   const d = getData();
-  const favorites = d.favorites.includes(qid) ? d.favorites.filter((x) => x !== qid) : [...d.favorites, qid];
-  save({ ...d, favorites });
+  const on = !d.favorites.includes(qid);
+  save({ ...d, favorites: on ? [...d.favorites, qid] : d.favorites.filter((x) => x !== qid) });
+  hooks.onFavorite?.(qid, on);
+}
+
+/** クラウドから取り込む：解答は id で和集合、お気に入りは渡された一覧で置き換える（null なら変えない） */
+export function mergeRemote(attempts: Attempt[], favorites: string[] | null) {
+  const d = getData();
+  const have = new Set(d.attempts.map((a) => a.id));
+  const add = attempts.filter((a) => !have.has(a.id));
+  const favChanged =
+    favorites !== null && (favorites.length !== d.favorites.length || favorites.some((f) => !d.favorites.includes(f)));
+  if (add.length === 0 && !favChanged) return;
+  save({ attempts: add.length ? [...d.attempts, ...add] : d.attempts, favorites: favChanged ? favorites! : d.favorites });
 }
 
 export function resetAll() {
