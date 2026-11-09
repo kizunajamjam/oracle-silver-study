@@ -1,0 +1,309 @@
+[
+  {
+    "id": "inst-001",
+    "chapter": "instance",
+    "stem": "STARTUP NOMOUNT を実行したときに行われることはどれか。",
+    "select": 1,
+    "choices": [
+      "SGAを割り当て、バックグラウンド・プロセスを起動する。",
+      "制御ファイルをオープンする。",
+      "データファイルとオンラインREDOログ・ファイルをオープンする。",
+      "インスタンス・リカバリを実行する。"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。NOMOUNTではパラメータ・ファイルを読んでインスタンス(SGAとバックグラウンド・プロセス)だけを起動する。",
+      "制御ファイルを開くのはMOUNTの段階。",
+      "データファイルとREDOログを開くのはOPENの段階。",
+      "インスタンス・リカバリが行われるのは、OPENの段階で必要な場合。"
+    ],
+    "tip": "NOMOUNT＝インスタンスだけ、MOUNT＝制御ファイルも、OPEN＝データファイルとREDOログも。順に開く範囲が広がる。",
+    "ref": "Oracle Database Administrator's Guide（Starting Up and Shutting Down）"
+  },
+  {
+    "id": "inst-002",
+    "chapter": "instance",
+    "stem": "STARTUP でパラメータ・ファイルを指定しなかった場合、Linux/UNIXで最初に検索されるファイルはどれか。",
+    "select": 1,
+    "choices": ["spfile<SID>.ora", "spfile.ora", "init<SID>.ora", "control01.ctl"],
+    "answer": [0],
+    "why": [
+      "正しい。検索順は spfile<SID>.ora → spfile.ora → init<SID>.ora。サーバー・パラメータ・ファイル(SPFILE)が優先される。",
+      "2番目に検索される。",
+      "テキスト形式のPFILEで、SPFILEが見つからない場合の最後の候補。",
+      "制御ファイルであり、パラメータ・ファイルではない。"
+    ],
+    "tip": "SPFILE(SID付き) → SPFILE(汎用) → PFILE の順。バイナリのSPFILEが優先、と覚える。",
+    "ref": "Oracle Database Administrator's Guide（Managing Initialization Parameters）"
+  },
+  {
+    "id": "inst-003",
+    "chapter": "instance",
+    "stem": "SHUTDOWN IMMEDIATE について正しい記述はどれか。",
+    "select": 1,
+    "choices": [
+      "新規接続を禁止し、既存のセッションが自分で切断するまで待つ。",
+      "未コミットのトランザクションをロールバックし、セッションを切断して停止する。次回の起動でインスタンス・リカバリは不要である。",
+      "実行中のトランザクションがすべて終了するのを待ってから停止する。",
+      "即座に停止する。次回の起動でインスタンス・リカバリが必要になる。"
+    ],
+    "answer": [1],
+    "why": [
+      "これはSHUTDOWN NORMALの動作。",
+      "正しい。未コミットの変更をロールバックし、整合性のある状態で停止するため、次回起動時にインスタンス・リカバリは不要。",
+      "これはSHUTDOWN TRANSACTIONALの動作。",
+      "これはSHUTDOWN ABORTの動作。"
+    ],
+    "tip": "NORMAL(全員の切断を待つ) → TRANSACTIONAL(トランザクションの終了を待つ) → IMMEDIATE(ロールバックして切る) → ABORT(即時、要リカバリ)。右ほど強制的。",
+    "ref": "Oracle Database Administrator's Guide（Shutting Down a Database）"
+  },
+  {
+    "id": "inst-004",
+    "chapter": "instance",
+    "stem": "次回の起動時にインスタンス・リカバリが必要になる停止方法はどれか。",
+    "select": 1,
+    "choices": ["SHUTDOWN NORMAL", "SHUTDOWN TRANSACTIONAL", "SHUTDOWN IMMEDIATE", "SHUTDOWN ABORT"],
+    "answer": [3],
+    "why": [
+      "ユーザーの切断を待ってクリーンに停止する。リカバリは不要。",
+      "実行中のトランザクションの完了を待ってクリーンに停止する。リカバリは不要。",
+      "ロールバックしてクリーンに停止する。リカバリは不要。",
+      "正しい。チェックポイントやロールバックを行わずに即時停止するため、次回起動時にSMONがインスタンス・リカバリを行う。"
+    ],
+    "tip": "クリーンな停止は NORMAL / TRANSACTIONAL / IMMEDIATE の3つ。ABORTだけが電源断と同じ扱い。",
+    "ref": "Oracle Database Administrator's Guide（Shutting Down a Database）"
+  },
+  {
+    "id": "inst-005",
+    "chapter": "instance",
+    "stem": "SHUTDOWN TRANSACTIONAL の動作として正しいものはどれか。",
+    "select": 1,
+    "choices": [
+      "新しいトランザクションの開始を許さず、実行中のトランザクションの完了後にセッションを切断して停止する。",
+      "実行中のトランザクションを直ちにロールバックして停止する。",
+      "すべてのセッションが自分で切断するまで停止しない。",
+      "チェックポイントを行わずに停止する。"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。トランザクションが終わった接続から順に切断し、すべて終われば停止する。",
+      "実行中のトランザクションを直ちにロールバックするのは、SHUTDOWN IMMEDIATEの動作。",
+      "これはSHUTDOWN NORMALの動作。",
+      "チェックポイントなしで停止するのはSHUTDOWN ABORT。"
+    ],
+    "tip": "TRANSACTIONALは「トランザクションの終わりを待つ」。待つ対象が、NORMALはセッション、TRANSACTIONALはトランザクション。",
+    "ref": "Oracle Database Administrator's Guide（Shutting Down a Database）"
+  },
+  {
+    "id": "inst-006",
+    "chapter": "instance",
+    "stem": "SPFILEで起動中のインスタンスで、静的な初期化パラメータ(再起動しないと有効にならないもの)を変更するときに指定すべき SCOPE はどれか。",
+    "select": 1,
+    "choices": ["SCOPE=MEMORY", "SCOPE=SPFILE", "SCOPE=BOTH", "DEFERRED"],
+    "answer": [1],
+    "why": [
+      "静的パラメータは実行中のインスタンスのメモリーには反映できないため、エラーになる。",
+      "正しい。SPFILEに書き込み、次回の起動から有効になる。",
+      "メモリーにも反映しようとするため、静的パラメータではエラーになる。",
+      "DEFERREDは、動的パラメータを新しいセッションから有効にする指定で、SCOPEの値ではない。"
+    ],
+    "tip": "静的パラメータは SCOPE=SPFILE だけ。動的パラメータなら MEMORY / SPFILE / BOTH から選べる。",
+    "ref": "Oracle Database Administrator's Guide（Managing Initialization Parameters）"
+  },
+  {
+    "id": "inst-007",
+    "chapter": "instance",
+    "stem": "SPFILEで起動したインスタンスで、動的パラメータを SCOPE を省略した ALTER SYSTEM SET で変更した。変更はどこに反映されるか。",
+    "select": 1,
+    "choices": [
+      "実行中のインスタンスのメモリーだけに反映される。",
+      "SPFILEだけに反映される。",
+      "メモリーとSPFILEの両方に反映される。",
+      "エラーになる。"
+    ],
+    "answer": [2],
+    "why": [
+      "メモリーだけにするには SCOPE=MEMORY を指定する。なお、PFILEで起動した場合はSCOPE省略時にメモリーのみ。",
+      "SPFILEだけにするには SCOPE=SPFILE を指定する。",
+      "正しい。SPFILEで起動していれば、SCOPE省略時は BOTH になる。",
+      "動的パラメータならSCOPEを省略してもエラーにならない。"
+    ],
+    "tip": "SCOPEの省略時：SPFILEで起動＝BOTH、PFILEで起動＝MEMORY。",
+    "ref": "Oracle Database Administrator's Guide（Managing Initialization Parameters）"
+  },
+  {
+    "id": "inst-008",
+    "chapter": "instance",
+    "stem": "SPFILEに保存されているパラメータの値を表示するビューはどれか。",
+    "select": 1,
+    "choices": ["V$PARAMETER", "V$SPPARAMETER", "V$SYSTEM_PARAMETER", "V$INSTANCE"],
+    "answer": [1],
+    "why": [
+      "V$PARAMETERは、現在のセッションに有効なパラメータ値を表示する。",
+      "正しい。V$SPPARAMETERはSPFILEの内容を表示する。",
+      "V$SYSTEM_PARAMETERは、インスタンス全体で現在有効な値を表示する。",
+      "V$INSTANCEは、インスタンスの名前や状態などを表示する。"
+    ],
+    "tip": "「SP」が付くものがSPFILEの中身。ほかは、いま有効な値(セッション用／インスタンス用)。",
+    "ref": "Oracle Database Reference（V$SPPARAMETER）"
+  },
+  {
+    "id": "inst-009",
+    "chapter": "instance",
+    "stem": "NOMOUNT状態で問合せできるビューはどれか。",
+    "select": 1,
+    "choices": ["V$INSTANCE", "V$DATABASE", "V$DATAFILE", "DBA_TABLES"],
+    "answer": [0],
+    "why": [
+      "正しい。V$INSTANCEはメモリー上のインスタンス情報から返されるため、NOMOUNTでも見られる。",
+      "V$DATABASEは制御ファイルから読むため、MOUNT以降でないと問合せできない。",
+      "V$DATAFILEも制御ファイルから読むため、MOUNT以降。",
+      "DBA_TABLESはデータ・ディクショナリの表を読むため、データベースがOPENでないと問合せできない。"
+    ],
+    "tip": "NOMOUNT＝メモリー由来(V$INSTANCE、V$PARAMETER、V$SGA)、MOUNT＝制御ファイル由来(V$DATABASE、V$DATAFILE)、OPEN＝DBA_ビュー。",
+    "ref": "Oracle Database Concepts（Data Dictionary and Dynamic Performance Views）"
+  },
+  {
+    "id": "inst-010",
+    "chapter": "instance",
+    "stem": "ALTER DATABASE ARCHIVELOG を実行できる状態はどれか。",
+    "select": 1,
+    "choices": ["NOMOUNT状態", "MOUNT状態(OPENしていない)", "OPEN状態", "どの状態でも実行できる"],
+    "answer": [1],
+    "why": [
+      "制御ファイルが開かれていないので、データベースに対する操作はできない。",
+      "正しい。アーカイブ・モードの切替は、MOUNTしていて、OPENしていない状態で行う。",
+      "OPEN状態では切り替えられない(ORA-01126が出る)。",
+      "状態によって実行できない。"
+    ],
+    "tip": "ログ・モードの切替やデータファイルの移動は、MOUNT状態で行う作業。",
+    "ref": "Oracle Database Administrator's Guide（Managing Archived Redo Log Files）"
+  },
+  {
+    "id": "inst-011",
+    "chapter": "instance",
+    "stem": "起動・停止、ALTER文の実行、重大なエラー(ORA-エラー)などを時系列で記録する診断ファイルはどれか。",
+    "select": 1,
+    "choices": ["アラート・ログ", "REDOログ・ファイル", "制御ファイル", "パスワード・ファイル"],
+    "answer": [0],
+    "why": [
+      "正しい。アラート・ログにはデータベースの重要なイベントが時系列で記録される。",
+      "REDOログには、データ変更の記録が入る。診断用のテキスト・ログではない。",
+      "制御ファイルはデータベースの構造とリカバリ情報の台帳。",
+      "パスワード・ファイルは、SYSDBAなどの認証に使うパスワード情報のファイル。"
+    ],
+    "tip": "「何が起きたか」を知りたいときの最初の見る場所がアラート・ログ。プロセス別の詳細はトレース・ファイル。",
+    "ref": "Oracle Database Administrator's Guide（Diagnosing and Resolving Problems）"
+  },
+  {
+    "id": "inst-012",
+    "chapter": "instance",
+    "stem": "ADR(自動診断リポジトリ)のベース・ディレクトリを指定する初期化パラメータはどれか。",
+    "select": 1,
+    "choices": ["DIAGNOSTIC_DEST", "BACKGROUND_DUMP_DEST", "DB_CREATE_FILE_DEST", "UTL_FILE_DIR"],
+    "answer": [0],
+    "why": [
+      "正しい。DIAGNOSTIC_DESTがADRのベースで、アラート・ログやトレース・ファイルはその配下に置かれる。",
+      "BACKGROUND_DUMP_DESTは旧バージョンで使われていたもので、11g以降はDIAGNOSTIC_DESTに置き換わっている。",
+      "DB_CREATE_FILE_DESTは、Oracle Managed Filesでデータファイルを作る場所。",
+      "UTL_FILE_DIRは、UTL_FILEパッケージがアクセスできるディレクトリの指定(旧式)。"
+    ],
+    "tip": "診断情報の置き場所は DIAGNOSTIC_DEST の1つにまとまった。昔のDUMP_DEST系は使わない。",
+    "ref": "Oracle Database Administrator's Guide（Diagnosing and Resolving Problems）"
+  },
+  {
+    "id": "inst-013",
+    "chapter": "instance",
+    "stem": "SYSOPER権限ではできず、SYSDBA権限でできる操作はどれか。",
+    "select": 1,
+    "choices": ["STARTUP", "SHUTDOWN IMMEDIATE", "ALTER DATABASE OPEN", "CREATE DATABASE"],
+    "answer": [3],
+    "why": [
+      "STARTUPはSYSOPERでも実行できる。",
+      "SHUTDOWNはSYSOPERでも実行できる。",
+      "ALTER DATABASE OPEN / MOUNT はSYSOPERでも実行できる。",
+      "正しい。データベースの作成(CREATE DATABASE)はSYSDBAだけができる。"
+    ],
+    "tip": "SYSOPER＝運用担当(起動・停止・バックアップ・リカバリ)、SYSDBA＝それに加えてデータベースの作成など管理者の権限すべて。",
+    "ref": "Oracle Database Administrator's Guide（Administrative Privileges）"
+  },
+  {
+    "id": "inst-014",
+    "chapter": "instance",
+    "stem": "データベース・サーバー上で、パスワードを入力せずに sqlplus / as sysdba で接続できるのはどのような場合か。",
+    "select": 1,
+    "choices": [
+      "OSユーザーが、OSDBAグループ(通常はdba)に属している。",
+      "SYSユーザーのパスワードが設定されていない。",
+      "リスナーが起動している。",
+      "データベースがOPEN状態である。"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。OS認証では、OSDBAグループに属するOSユーザーならSYSDBAとして接続できる。",
+      "SYSユーザーにはパスワードがあるのが前提で、OS認証の条件とは関係ない。",
+      "サーバー上で直接接続する場合、リスナーは経由しない。",
+      "インスタンスだけ起動している状態(NOMOUNT)でも、SYSDBAなら接続できる。"
+    ],
+    "tip": "「/」で接続できるのはOS認証。OSのグループ(dba)に入っているかが決め手で、DB側のパスワードではない。",
+    "ref": "Oracle Database Administrator's Guide（Administrative Privileges）"
+  },
+  {
+    "id": "inst-015",
+    "chapter": "instance",
+    "stem": "データ・ディクショナリの基表とビューを所有するユーザーはどれか。",
+    "select": 1,
+    "choices": ["SYS", "SYSTEM", "DBSNMP", "HR"],
+    "answer": [0],
+    "why": [
+      "正しい。データ・ディクショナリの基表とビューはSYSが所有する。直接変更してはならない。",
+      "SYSTEMは、管理用の追加の表やビューを所有するが、ディクショナリの基表の所有者ではない。",
+      "DBSNMPは、Enterprise Managerが監視に使うアカウント。",
+      "HRはサンプル・スキーマのユーザー。"
+    ],
+    "tip": "ディクショナリの持ち主はSYS。SYSTEMは管理用の補助。",
+    "ref": "Oracle Database Concepts（Data Dictionary and Dynamic Performance Views）"
+  },
+  {
+    "id": "inst-016",
+    "chapter": "instance",
+    "stem": "STARTUP RESTRICT で起動(オープン)したデータベースに接続できるのは、どのユーザーか。",
+    "select": 1,
+    "choices": [
+      "RESTRICTED SESSION権限を持つユーザー",
+      "SYSユーザーだけ",
+      "読取り専用のユーザー",
+      "誰も接続できない"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。RESTRICTED SESSION権限があるユーザーだけが接続できる。保守作業のときに使う。",
+      "SYSだけではない。権限を持つほかのユーザーも接続できる。",
+      "「読取り専用」ではなく、権限の有無で決まる。",
+      "権限を持つユーザーは接続できる。"
+    ],
+    "tip": "RESTRICT＝RESTRICTED SESSION権限を持つ人だけ入れる保守モード。",
+    "ref": "Oracle Database Administrator's Guide（Starting Up a Database）"
+  },
+  {
+    "id": "inst-017",
+    "chapter": "instance",
+    "stem": "テキスト形式のPFILEから、SPFILEを作成する文はどれか。",
+    "select": 1,
+    "choices": [
+      "CREATE SPFILE FROM PFILE",
+      "CREATE PFILE FROM SPFILE",
+      "ALTER SYSTEM SET SPFILE",
+      "ALTER DATABASE CREATE SPFILE"
+    ],
+    "answer": [0],
+    "why": [
+      "正しい。CREATE SPFILE FROM PFILE で、PFILEの内容からSPFILEを作る。",
+      "向きが逆。SPFILEからPFILEを作る文。",
+      "ALTER SYSTEM SET SPFILE は、SPFILEの作成を行う文ではない。",
+      "そのような文はない。"
+    ],
+    "tip": "CREATE ○○ FROM △△ は「△△から○○を作る」。SPFILEを作るなら FROM PFILE。",
+    "ref": "Oracle Database Administrator's Guide（Managing Initialization Parameters）"
+  }
+]
